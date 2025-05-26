@@ -51,6 +51,22 @@ jobs:
           TF_VAR_datadog_app_key: ${{ secrets.DATADOG_APP_KEY }}
         run: terraform apply -auto-approve tfplan
 
+      - name: Obtener Outputs de Terraform
+        id: outputs
+        working-directory: ./tf
+        run: |
+          terraform output -json > outputs.json
+
+      - name: Actualizar Secreto EC2_INSTANCE
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          FRONTEND_IP=$(jq -r .frontend_public_ip.value < ./tf/outputs.json)
+          BACKEND_IP=$(jq -r .backend_public_ip.value < ./tf/outputs.json)
+          echo "EC2_INSTANCE=frontend_public_ip=$FRONTEND_IP,backend_public_ip=$BACKEND_IP" > .env
+          gh secret set EC2_INSTANCE -b"$(cat .env)"
+
   deploy_agent:
     name: Despliegue del Agente Datadog
     needs: terraform
