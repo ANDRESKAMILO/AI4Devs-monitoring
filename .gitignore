@@ -5,8 +5,30 @@
 **/node_modules
 **/prompts_master.md
 
+# Terraform
 **/.terraform/
-**/.terraform.lock.hcl  
+**/.terraform.lock.hcl
+**/terraform.tfvars
+**/terraform.tfstate
+**/terraform.tfstate.backup
+**/*.tfstate.*
+**/crash.log
+**/.terraformrc
+**/terraform.rc
+
+# Credenciales y Secretos
+**/.env
+**/*.pem
+**/*.key
+**/*.crt
+**/*.pfx
+**/*.p12
+**/*.keystore
+**/*.jks
+**/*secret*
+**/*credential*
+**/*password*
+**/*api_key*
 
 # other dependencies
 **/.pnp
@@ -23,9 +45,14 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+**/crash.log*
 
 # IDE
 .idea
 .vscode
+*.swp
+*.swo
+.cursor/
+**/.cursor/
 
 # .env
