@@ -42,11 +42,11 @@ jobs:
           TF_VAR_datadog_api_key: ${{ secrets.DATADOG_API_KEY }}
           TF_VAR_datadog_app_key: ${{ secrets.DATADOG_APP_KEY }}
         run: |
-         set -e
-         terraform init
-         terraform fmt -check
-         terraform validate
-         terraform plan -out=tfplan || (echo "Terraform plan failed. Please inspect the issue." && exit 1)
+          set -e
+          terraform init
+          terraform fmt -check
+          terraform validate
+          terraform plan -out=tfplan || (echo "Terraform plan failed. Details:" && terraform validate && exit 1)
       
       - name: Terraform Apply
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -61,6 +61,10 @@ jobs:
         working-directory: ./tf
         run: |
           terraform output -json > outputs.json
+          FRONTEND_IP=$(jq -r .frontend_public_ip.value < ./tf/outputs.json)
+          BACKEND_IP=$(jq -r .backend_public_ip.value < ./tf/outputs.json)
+          echo "FRONTEND_IP=$FRONTEND_IP" >> $GITHUB_ENV
+          echo "BACKEND_IP=$BACKEND_IP" >> $GITHUB_ENV
 
       - name: Actualizar Secreto EC2_INSTANCE
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'

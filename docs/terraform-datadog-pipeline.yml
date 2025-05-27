@@ -1,0 +1,62 @@
+# Pipeline de Terraform y Datadog
+
+## Descripción
+Este pipeline automatiza el despliegue de infraestructura AWS y la integración con Datadog utilizando Terraform.
+
+## Requisitos Previos
+- Cuenta AWS configurada
+- Cuenta Datadog activa
+- Secretos configurados en GitHub Actions
+
+## Secretos Requeridos en GitHub Actions
+- `AWS_ACCESS_ID`: ID de acceso de AWS
+- `AWS_ACCESS_KEY`: Clave de acceso secreta de AWS
+- `DATADOG_API_KEY`: Clave API de Datadog
+- `DATADOG_APP_KEY`: Clave de aplicación de Datadog
+- `EC2_SSH_PRIVATE_KEY`: Clave SSH para acceso a instancias EC2
+- `EC2_USER`: Usuario SSH para EC2
+- `EC2_INSTANCE`: Información de instancias EC2 (actualizada automáticamente)
+
+## Flujo del Pipeline
+
+### 1. Terraform Plan & Apply
+- Checkout del código
+- Configuración de credenciales AWS
+- Inicialización de Terraform
+- Validación de formato
+- Plan de Terraform
+- Aplicación de cambios (solo en main)
+- Actualización de outputs
+
+### 2. Despliegue del Agente Datadog
+- Configuración de acceso SSH a EC2
+- Transferencia de script de instalación
+- Instalación y configuración del agente
+
+## Triggers
+- Pull Requests: Plan de Terraform
+- Push a main: Plan y Apply de Terraform
+
+## Estructura de Archivos
+```
+.
+├── .github/workflows/terraform-datadog-pipeline.yml  # Definición del pipeline
+├── tf/                                              # Código Terraform
+│   ├── main.tf
+│   ├── variables.tf
+│   └── outputs.tf
+└── scripts/
+    └── install_datadog_agent.sh                     # Script de instalación
+```
+
+## Notas de Seguridad
+- Los secretos se manejan a través del sistema de secretos de GitHub Actions
+- Las claves SSH se configuran temporalmente durante la ejecución
+- Los archivos sensibles se limpian después de su uso
+- Los planes de Terraform (*.tfplan) están excluidos del control de versiones
+
+## Mantenimiento
+- Actualizar versiones de providers según sea necesario
+- Revisar y actualizar permisos IAM periódicamente
+- Monitorear los logs de ejecución del pipeline
+- Verificar la configuración del agente Datadog regularmente
