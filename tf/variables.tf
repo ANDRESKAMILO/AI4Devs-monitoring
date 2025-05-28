@@ -10,6 +10,18 @@ variable "datadog_app_key" {
   sensitive   = true
 }
 
+variable "datadog_external_id" {
+  description = "External ID para la integración de Datadog con AWS"
+  type        = string
+  sensitive   = true
+}
+
+variable "environment" {
+  description = "Ambiente de despliegue"
+  type        = string
+  default     = "production"
+}
+
 variable "aws_region" {
   description = "AWS region"
   type        = string

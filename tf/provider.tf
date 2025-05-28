@@ -19,3 +19,6 @@ provider "datadog" {
   api_key = var.datadog_api_key
   app_key = var.datadog_app_key
 }
+
+# Obtener información de la cuenta de AWS actual
+data "aws_caller_identity" "current" {}
