@@ -110,14 +110,40 @@ resource "aws_iam_role_policy_attachment" "datadog_policy_attachment" {
 }
 
 # Integración de Datadog con AWS
-resource "datadog_integration_aws" "integration" {
-  account_id                 = data.aws_caller_identity.current.account_id
-  role_name                 = aws_iam_role.datadog_integration_role.name
-  host_tags                 = ["env:${var.environment}", "project:ai4devs"]
-  account_specific_namespace_rules = {
-    lambda              = true
-    ecs                = true
-    cloudtrail         = true
-    cloudwatch         = true
+resource "datadog_integration_aws_account" "integration" {
+  aws_account_id = data.aws_caller_identity.current.account_id
+  aws_partition = "aws"  # Partición estándar de AWS
+
+  aws_regions {
+    include_all = true  # Incluir todas las regiones
+  }
+
+  auth_config {
+    aws_auth_config_role {
+      role_name = aws_iam_role.datadog_integration_role.name  # Nombre del rol de integración
+    }
+  }
+
+  logs_config {
+    lambda_forwarder {
+      # Eliminar el argumento no soportado
+    }
+  }
+
+  metrics_config {
+    namespace_filters {
+      # Eliminar el argumento no soportado
+    }
+  }
+
+  traces_config {
+    xray_services {
+      # Eliminar el argumento no soportado
+    }
+  }
+
+  resources_config {
+    cloud_security_posture_management_collection = true  # Habilitar la colección de postura de seguridad en la nube
+    extended_collection = true  # Habilitar la colección extendida
   }
 } 

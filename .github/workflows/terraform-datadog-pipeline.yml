@@ -63,6 +63,14 @@ jobs:
         DATADOG_APP_KEY: ${{ secrets.DATADOG_APP_KEY }}
         DATADOG_EXTERNAL_ID: ${{ secrets.DATADOG_EXTERNAL_ID }}
 
+    - name: Obtener Outputs de Terraform
+      id: outputs
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: |
+        terraform output -json > outputs.json
+        echo "frontend_ip=$(jq -r .frontend_public_ip.value outputs.json)" >> "$GITHUB_ENV"
+        echo "backend_ip=$(jq -r .backend_public_ip.value outputs.json)" >> "$GITHUB_ENV"
+
   deploy_agent:
     name: Despliegue del Agente Datadog
     needs: terraform
